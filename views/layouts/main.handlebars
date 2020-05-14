@@ -6,16 +6,37 @@
   <link rel="stylesheet" type="text/css" href="/public/css/main.css">
   <title>Final Project</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+<style>
+.navigation-bar {
+    width: 100%;  /* i'm assuming full width */
+    height: 80px; /* change it to desired width */
+}
+.navigation-bar img {
+  display:inline-block;
+  float: left;
+  height: 80px;
+  width:auto
+}
+
+.navigation-bar  a {
+    float: right;
+    display: inline-block;
+    text-align: right;
+    vertical-align: top;
+    margin-right: 20px;
+    height: 80px;        /* if you want it to take the full height of the bar */
+    line-height: 80px;    /* if you want it vertically middle of the navbar */
+}
+</style>
 </head>
-<div class="nav">
-  <div>
-    <a href="/random">Random</a>
-    <a href="/manyitems">5 or more items</a>
-    <a href="/state/MD">MD only</a>
-    <a href="/recent">Most Recent</a>
-    <a href="/city/Germantown">Germantown Only</a>
-  </div>
-</div>
+<nav class="navigation-bar">
+  <img src="https://img.favpng.com/20/10/2/television-android-tv-logo-png-favpng-4CGGnVN1qPyPe8jUEHTgqqLRi.jpg">
+    <a href="/profile">My Profile</a>
+    <a href="/login">Login</a>
+    <a href="/signup">Sign-Up</a>
+    <a href="/about">About</a>
+    <a href="/">Home</a>
+</nav>
 
 <body>
  {{{body}}}

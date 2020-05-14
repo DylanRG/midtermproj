@@ -1,0 +1,238 @@
+<style>
+
+    .modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+    
+    .container {
+        text-align: center;
+    }
+
+    .box{
+        text-align: center;
+        width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 10px #888888;
+    }
+
+    .box-list {
+        text-align: center;
+        width: 700px;
+        height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid;
+        padding: 10px;
+        box-shadow: 5px 10px #888888;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .debug {
+        visibility:hidden;
+    }
+
+    .cards {
+    -moz-column-count: 4;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 4;
+    -webkit-column-gap: 20px;
+    column-count: 4;
+    column-gap: 20px;
+    }
+
+    .cards_list_image img {
+        border-radius: 16px;
+  padding: 5px;
+  height: 200px;
+  width: auto;
+}
+ul{
+    list-style-type: disc;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    columns: 2;
+    list-style-position: inside;//this is important addition
+    list-style: none
+}
+li {
+    list-style: none
+    display: block
+    width: 25%;
+}
+</style>
+<div class="box" style="text-align: center;">
+    <h1>{{user}}'s current anime:</h1>
+</div>
+<br>
+<div class="box-list">
+    {{#if loggedin}}
+    <button id="myBtn">Open Modal</button>
+    {{/if}}
+    {{#if anime}}
+    {{else}}
+    <span style="text-align: center;">No anime being watched :(</span>
+    {{/if}}
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+        <div class="app">
+                    <div class="search">
+                        <input id="search_query" type="text" name="query" placeholder="search for an anime, e.g Naruto" />
+                        <button id="search">Go</button>
+                    </div>
+                    <div class="debug">
+                        Requesting: <a target="_blank" id="search_query_url" href="javascript:void(null)">API Request URL will appear here</a>
+                    </div>
+
+                    <div id="search_results" class="cards">
+                    </div>
+                </div>
+  </div>
+
+</div>
+    <ul>
+        {{#if anime}}
+        {{#each anime}}
+        <li>
+            <a class="cards_list" >
+                    <div class="cards_list_image">
+                        <img src="{{image}}" />
+                    </div>
+                    <div class="cards_list_name">
+                        <span>{{title}}</span> 
+                    </div>
+                </a>
+        </li>
+        {{/each}}
+        {{/if}}
+    </ul>
+  </div>
+  <script>
+      function search() {
+    var query = document.getElementById('search_query').value;
+
+    if (query.length < 3) {
+        alert('Error: Requires atleast 3 or more characters');
+        return;
+    }
+
+    var requestUrl = `https://api.jikan.moe/v3/search/anime?q=${query}&limit=16`;
+    document.getElementById('search_query_url').innerHTML = 'working...';
+    document.getElementById('search_query_url').href = 'javascript:void(null)';
+    
+
+    fetch(requestUrl)
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('search_query_url').innerHTML = requestUrl;
+        document.getElementById('search_query_url').href = requestUrl;
+
+        var node = document.getElementById('search_results');
+        while (node.firstChild) {node.removeChild(node.firstChild);}
+
+        data.results.forEach(item => {
+            document.getElementById('search_results')
+            .insertAdjacentHTML(
+                'beforeend',
+                `
+                <a class="card" url="${item.url}" imageurl="${item.image_url}" title="${item.title}">
+                    <div class="card__image">
+                        <img src="${item.image_url}" />
+                    </div>
+                    <div class="card__name">
+                        <span>${item.title}</span> 
+                    </div>
+                </a>
+                `
+            );
+        });
+    });
+}
+document.getElementById('search').onclick = () => search();
+document.getElementById('search_query').onkeydown = (event) => {
+    if (event.keyCode === 13) {
+        search();
+    }
+};
+$(document).on('click', '.card' , function() {
+     var _title = ($(this).attr("title"));
+     var _image = ($(this).find('img').attr('src'));
+     var _url = ($(this).attr("url"));
+
+     var xhr = new XMLHttpRequest();
+xhr.open("POST", '/api/addAnime', true);
+xhr.setRequestHeader('Content-Type', 'application/json');
+xhr.send(JSON.stringify({
+    image: _image,
+    title: _title,
+    url: _url
+}));
+  window.location.replace("/profile");      // finds the <p> elements, and sets its text to:
+});
+  </script>
+  <script>
+      var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+  </script>
